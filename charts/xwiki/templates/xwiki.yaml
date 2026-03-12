@@ -7,7 +7,7 @@ apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 {{- end }}
 metadata:
-  name: {{ $fullName }}
+  name: {{ (include "xwiki.fullname" $) }}
   labels:
     {{- include "xwiki.labels" . | nindent 4 }}
   annotations:
@@ -17,7 +17,7 @@ metadata:
 spec:
   replicas: {{ .Values.cluster.replicas }}
   {{- if .Values.workloadStateful }}
-  serviceName: {{ $fullName }}
+  serviceName: {{ (include "xwiki.fullname" $) }}
   {{- end }}
   selector:
     matchLabels:
@@ -35,7 +35,7 @@ spec:
       labels:
         {{- include "xwiki.labels" . | nindent 8 }}
     spec:
-      serviceAccountName: {{ $fullName }}-sa
+      serviceAccountName: {{ (include "xwiki.fullname" $) }}-sa
       initContainers:
         {{- include "xwiki.initContainersSecrets" . | nindent 8 }}
       {{- if or .Values.initContainers.database.enabled .Values.initContainers.solr.enabled (and .Values.volumePermissions.enabled .Values.persistence.enabled) }}
@@ -58,6 +58,10 @@ spec:
             - containerPort: {{ .Values.prometheus.javaagent.port }}
           {{- end }}
           env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           {{- if .Values.javaOpts }}
             - name: JAVA_OPTS
               value: {{ .Values.javaOpts | join " " | quote }}
@@ -71,7 +75,7 @@ spec:
             - name: SOLR_BASEURL
               valueFrom:
                 configMapKeyRef:
-                  name: {{ $fullName }}
+                  name: {{ (include "xwiki.fullname" $) }}
                   key: SOLR_BASEURL
           {{- end }}
         {{- if .Values.probes.startup.enabled }}
@@ -219,12 +223,14 @@ spec:
         {{- include "common.storage.class" (dict "persistence" .Values.persistence "global" .Values.global) | nindent 8 }}
   {{- else }}
           persistentVolumeClaim:
-            claimName: xwiki
+            claimName: {{ include "xwiki.fullname" . }}
+  {{- end }}
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) (not .Values.persistence.customVolume) (not (and .Values.workloadStateful (not .Values.cluster.enabled))) -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: xwiki
+  name: {{ include "xwiki.fullname" . }}
   annotations:
     helm.sh/resource-policy: keep
 spec:
@@ -238,4 +244,4 @@ spec:
   {{- if .Values.persistence.storageClass }}
   storageClassName: {{ .Values.persistence.storageClass | quote }}
   {{- end }}
-  {{- end }}
+{{- end }}

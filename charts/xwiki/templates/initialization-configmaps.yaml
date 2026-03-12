@@ -105,7 +105,7 @@ data:
             xmlns="urn:org:jgroups"
             xsi:schemaLocation="urn:org:jgroups http://www.jgroups.org/schema/jgroups.xsd">
         <TCP external_addr="${JGROUPS_EXTERNAL_ADDR:match-interface:eth0}"
-          bind_addr="site_local,match-interface:eth0"
+          bind_addr="site_local,match-interface:.*"
           bind_port="{{ .Values.cluster.jgroups.port }}"
           recv_buf_size="${tcp.recv_buf_size:512k}"
           send_buf_size="${tcp.send_buf_size:512k}"

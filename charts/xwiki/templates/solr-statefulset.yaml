@@ -40,9 +40,11 @@ spec:
             - name: xwiki-solr-data
               mountPath: /tmp/cores
           securityContext:
-            runAsGroup: 1001
-            runAsUser: 1001
+            {{- toYaml .Values.solr.downloadCores.securityContext | nindent 12 }}
           args:
+            {{- if .Values.solr.downloadCores.extraArgs }}
+              {{- toYaml .Values.solr.downloadCores.extraArgs | nindent 12 }}
+            {{- else }}
             - |
               SOLR_CORE_URL="https://maven.xwiki.org/releases/org/xwiki/platform/xwiki-platform-search-solr-server-core/15.5/xwiki-platform-search-solr-server-core-15.5.jar"
               SOLR_MINIMAL_CORE_URL="https://maven.xwiki.org/releases/org/xwiki/platform/xwiki-platform-search-solr-server-core-minimal/15.5/xwiki-platform-search-solr-server-core-minimal-15.5.zip"
@@ -53,6 +55,7 @@ spec:
               unzip -qqo ./xwiki-minimal-core.zip -d ./cores/xwiki_events
               unzip -qqo ./xwiki-minimal-core.zip -d ./cores/xwiki_extension_index
               unzip -qqo ./xwiki-minimal-core.zip -d ./cores/xwiki_ratings
+            {{- end }}
       {{- end }}
       containers:
         - name: {{ printf "%s-solr" .Chart.Name }}
@@ -93,7 +96,7 @@ spec:
             - name: xwiki-solr-data
               mountPath: /var/solr/
       securityContext:
-        fsGroup: 1001
+        {{- toYaml .Values.solr.podSecurityContext | nindent 8 }}
     {{- with .Values.solr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

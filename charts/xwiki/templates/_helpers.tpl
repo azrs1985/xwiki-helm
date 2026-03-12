@@ -220,14 +220,14 @@ Init Containers for secrets
         secretKeyRef:
           {{- if hasKey $value "secret" }}
           {{- if and $value.secret.name $value.secret.key }}
-          name: {{ $value.secret.name | default $fullName | quote }}
+          name: {{ $value.secret.name | default (include "xwiki.fullname" $) | quote }}
           key: {{ $value.secret.key | default $keySanitised | quote }}
           {{- else }}
-          name: {{ $fullName | quote }}
+          name: {{ (include "xwiki.fullname" $) | quote }}
           key: {{ $keySanitised | quote }}
           {{- end }}
           {{- else }}
-          name: {{ $fullName | quote }}
+          name: {{ (include "xwiki.fullname" $) | quote }}
           key: {{ $keySanitised | quote }}
           {{- end }}
   {{- end }}
@@ -239,14 +239,14 @@ Init Containers for secrets
         secretKeyRef:
           {{- if hasKey $value "secret" }}
           {{- if and $value.secret.name $value.secret.key }}
-          name: {{ $value.secret.name | default $fullName | quote }}
+          name: {{ $value.secret.name | default (include "xwiki.fullname" $) | quote }}
           key: {{ $value.secret.key | default $keySanitised | quote }}
           {{- else }}
-          name: {{ $fullName | quote }}
+          name: {{ (include "xwiki.fullname" $) | quote }}
           key: {{ $keySanitised | quote }}
           {{- end }}
           {{- else }}
-          name: {{ $fullName | quote }}
+          name: {{ (include "xwiki.fullname" $) | quote }}
           key: {{ $keySanitised | quote }}
           {{- end }}
     {{- end }}
