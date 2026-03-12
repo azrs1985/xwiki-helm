@@ -1,0 +1,27 @@
+{{- if .Values.route.enabled -}}
+{{- $fullName := include "xwiki.fullname" . -}}
+{{- $svcPort := .Values.service.externalPort -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $fullName }}-route
+  labels:
+    {{- include "xwiki.labels" . | nindent 4 }}
+  {{- with .Values.route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  host: {{ .Values.route.host | quote }}
+  path: {{ .Values.route.path }}
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    weight: {{ .Values.route.weight | default 100 }}
+  port:
+    targetPort: {{ .Values.route.targetPort | default .Values.service.portName }}
+  {{- if .Values.route.tls.enabled }}
+  tls:
+    {{- omit .Values.route.tls "enabled" | toYaml | nindent 4 }}
+  {{- end }}
+{{- end -}}

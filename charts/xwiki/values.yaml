@@ -374,6 +374,20 @@ ingress:
   #  - secretName: secret-tls
   #    hosts:
   #      - xwiki.local
+  #    hosts:
+
+# To use route for routing set route.enabled value to true
+route:
+  enabled: false
+  annotations: {}
+  host: ""
+  path: "/"
+  targetPort: ""
+  weight: 100
+  tls:
+    enabled: false
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
 
 # To use istio for routing set istio.enabled value to true and ingress.enabled value to false
 istio:
