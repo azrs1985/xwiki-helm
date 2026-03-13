@@ -66,9 +66,11 @@ javaOptsSecrets:
   #     # -- Key inside the Kubernetes secret that contains the superadmin password
   #     key: "keyinsecret"
 
-extraEnvVars: []
-#  - name: FOO
-#    value: "bar"
+extraEnvVars:
+  - name: XWIKI_FLAVOR
+    value: "org.xwiki.platform:xwiki-platform-distribution-flavor-mainwiki"
+  - name: XWIKI_EXTENSIONS
+    value: "org.xwiki.contrib.oidc:oidc-authenticator,org.xwiki.platform:xwiki-platform-attachment-s3,org.xwiki.platform:xwiki-platform-rendering-parser-xwiki10,org.xwiki.platform:xwiki-platform-ref-app,org.xwiki.contrib.gdpr:gdpr-cookie-consent,org.xwiki.contrib:application-diagram,org.xwiki.contrib:macro-fullcalendar,org.xwiki.contrib:application-calendar,org.xwiki.contrib:macro-pdfviewer,org.xwiki.contrib:application-pdfviewer"
 
 # Optionally specify an extra list of additional volumes.
 extraVolumes: []
